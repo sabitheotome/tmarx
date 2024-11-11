@@ -9,7 +9,7 @@ git clone https://github.com/sabitheotome/tmarx "${XDG_DATA_HOME:-$HOME}/tmarx"
 
 Install **Tmarx** adding the following line in your **shell RC**:
 ```bash
-[[ -s "$XDG_DATA_HOME/tmarx/tmarx.sh" ]] && source "$XDG_DATA_HOME/tmarx/tmarx.sh"
+[[ -s "$XDG_DATA_HOME/tmarx/tmarx.sh" ]] && source "$XDG_DATA_HOME/tmarx/tmarx.sh" && tmarx attach
 ```
 
 Your **shell RC** will be different depending on your shell, OS, configurations, etc.
