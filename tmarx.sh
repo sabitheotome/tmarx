@@ -10,7 +10,16 @@ function tmarx() {
 
     case "$1" in
         mark | m)
-            tmarx-mark ${@:2}
+            case $2 in
+                "-g")
+                    MARKPWD=".*"
+                    tmarx-mark ${@:3}
+                    ;;
+                *)
+                    MARKPWD=$PWD
+                    tmarx-mark ${@:2}
+                    ;;
+            esac
             ;;
         attach | a)
             tmarx-attach ${@:2}
@@ -62,10 +71,18 @@ tmarx-run() {
     prefix="$PWD $1"
 
     if [ -f $TMARXFILE ]; then
-        string=$(cat $TMARXFILE | \grep -h "$PWD \b$1\b")
+
+        commd=$(cat $TMARXFILE | \grep -h ".*\bh\b.*" | awk -v PWD=$PWD '
+            { gsub("/","\\/", $1) }
+            PWD ~ $1 {
+                $1=""
+                $2=""
+                print $0
+            }
+        ' - | awk 'NR==1 {print; exit}' -)
     fi
 
-    if [ -z "${string}" ]; then
+    if [ -z "$commd" ]; then
         if command -v "\\$1" 2>&1 >/dev/null; then
             command $1
             return $?
@@ -75,8 +92,7 @@ tmarx-run() {
         fi
     fi
     opts=${@#"$1"}
-    cmd=${string#"$prefix"}
-    eval "$cmd $opts"
+    eval "$commd $opts"
 }
 
 tmarx-attach() {
@@ -97,10 +113,10 @@ tmarx-mark() {
     if [ $# -ge 2 ]; then
         tmarx-file
         command mkdir -p "${TMARXFILE%/*}/"
-        echo "$PWD $@" >> "$TMARXFILE"
-        echo "Mark set as '$1' at $PWD"
+        echo "$MARKPWD $@" >> "$TMARXFILE"
+        echo "Mark set as '$1' at $MARKPWD"
     else
-        echo "usage: tmarx mark <name> \"<command>\""
+        echo "usage: tmarx mark [-g] <name> \"<command>\""
     fi
     tmarx-attach
 }
