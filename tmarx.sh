@@ -72,7 +72,7 @@ tmarx-run() {
 
     if [ -f $TMARXFILE ]; then
 
-        commd=$(cat $TMARXFILE | \grep -h ".*\bh\b.*" | awk -v PWD=$PWD '
+        commd=$(cat $TMARXFILE | \grep -h ".*\b$1\b.*" | awk -v PWD=$PWD '
             { gsub("/","\\/", $1) }
             PWD ~ $1 {
                 $1=""
